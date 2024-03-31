@@ -5,7 +5,12 @@ import { Circle } from "./interfaces/Circle";
 import { SvgIconProps } from "@mui/material";
 import Simulation from "./components/Simulation";
 import generateRandomColor from "./functions/generateRandomColor";
-import { minX, maxX, minY, maxY } from "./constants/min-max-values";
+import {
+  maxLeft,
+  maxRight,
+  maxBottom,
+  maxTop,
+} from "./constants/min-max-values";
 
 export default function Home() {
   const [circles, setCircles] = useState<Circle[]>([]);
@@ -15,8 +20,8 @@ export default function Home() {
       ...circles,
       {
         key: circles.length + 1,
-        x: Math.floor(Math.random() * (maxX - minX + 1) + minX),
-        y: Math.floor(Math.random() * (maxY - minY + 1) + minY),
+        x: Math.floor(Math.random() * (maxRight - maxLeft + 1) + maxLeft),
+        y: Math.floor(Math.random() * (maxBottom - maxTop + 1) + maxTop),
         r: 50,
         color: "#" + generateRandomColor(),
         icon: icon,
@@ -31,7 +36,7 @@ export default function Home() {
           <SimulatorToolbar addCircle={addCircle} />
         </div>
         <div className="col-span-10 bg-gray-100">
-          <Simulation circles={circles}></Simulation>
+          <Simulation _circles={circles}></Simulation>
         </div>
       </div>
     </main>

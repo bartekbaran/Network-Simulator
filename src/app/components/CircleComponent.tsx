@@ -1,14 +1,22 @@
 import Draggable, { DraggableData } from "react-draggable";
 import { Circle } from "../interfaces/Circle";
+import {
+  maxLeft,
+  maxRight,
+  maxBottom,
+  maxTop,
+} from "../constants/min-max-values";
 
 function CircleComponent({
   circle,
   addLine,
   isSelected,
+  circleDragged,
 }: {
   circle: Circle;
   addLine: any;
   isSelected: boolean;
+  circleDragged: any;
 }) {
   const trackPos = (data: DraggableData) => {
     circle = {
@@ -16,6 +24,7 @@ function CircleComponent({
       x: data.x,
       y: data.y,
     };
+    circleDragged(circle);
   };
 
   const handleClick = (e: {
@@ -29,7 +38,16 @@ function CircleComponent({
   };
 
   return (
-    <Draggable onDrag={(e, data) => trackPos(data)}>
+    <Draggable
+      bounds={{
+        left: maxLeft,
+        right: maxRight,
+        bottom: maxBottom,
+        top: maxTop,
+      }}
+      onDrag={(e, data) => trackPos(data)}
+      defaultPosition={{ x: circle.x, y: circle.y }}
+    >
       <div
         key={circle.key}
         style={{
@@ -37,8 +55,6 @@ function CircleComponent({
           cursor: "move",
           margin: "auto",
           userSelect: "none",
-          left: circle.x,
-          top: circle.y,
           width: circle.r + "px",
           height: circle.r + "px",
           borderRadius: "50%",
@@ -50,7 +66,6 @@ function CircleComponent({
           justifyContent: "center",
           alignItems: "center",
           zIndex: "3",
-          transform: "translate(0px, 0px)",
         }}
         onContextMenu={handleClick}
       >

@@ -1,14 +1,19 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Circle } from "../interfaces/Circle";
 import CircleComponent from "./CircleComponent";
-import { Line } from "../interfaces/Line";
 import LineComponent from "./LineComponent";
-import genearteLine from "../functions/generateLine";
 import { PairOfCircles } from "../interfaces/PairOfCircles";
 
-function Simulation({ circles }: { circles: Circle[] }) {
+function Simulation({ _circles }: { _circles: Circle[] }) {
   const [pairsOfCircles, setPairsOfCircles] = useState<PairOfCircles[]>([]);
   const [savedSelectedCircle, setSavedSelectedCircle] = useState<Circle>(null);
+  const [circles, setCircles] = useState<Circle[]>([]);
+
+  useEffect(() => {
+    let tempCircles = _circles;
+    setCircles(tempCircles);
+    console.log(circles);
+  }, [_circles]);
 
   function addLine(selectedCircle: Circle) {
     if (savedSelectedCircle === null) {
@@ -19,28 +24,44 @@ function Simulation({ circles }: { circles: Circle[] }) {
       setPairsOfCircles([
         ...pairsOfCircles,
         {
-          fromCircle: savedSelectedCircle,
-          toCircle: selectedCircle,
+          fromCircleKey: savedSelectedCircle.key,
+          toCircleKey: selectedCircle.key,
         },
       ]);
       setSavedSelectedCircle(null);
     }
   }
 
+  function circleDragged(draggedCircle: Circle) {
+    setCircles(
+      circles.map((circle) =>
+        circle.key === draggedCircle.key
+          ? { ...circle, x: draggedCircle.x, y: draggedCircle.y }
+          : circle
+      )
+    );
+  }
+
   return (
     <div id="simulation" className="relative" style={{ zIndex: "1" }}>
-      {circles.map((circle: Circle) => (
-        <CircleComponent
-          isSelected={
-            savedSelectedCircle !== null &&
-            circle.key === savedSelectedCircle.key
-          }
-          circle={circle}
-          addLine={addLine}
-        />
-      ))}
+      {circles !== undefined &&
+        circles.map((circle: Circle) => (
+          <CircleComponent
+            isSelected={
+              savedSelectedCircle !== null &&
+              circle.key === savedSelectedCircle.key
+            }
+            circle={circle}
+            addLine={addLine}
+            circleDragged={circleDragged}
+          />
+        ))}
       {pairsOfCircles.map((pair: PairOfCircles) => (
-        <LineComponent fromCircle={pair.fromCircle} toCircle={pair.toCircle} />
+        <LineComponent
+          fromCircleKey={pair.fromCircleKey}
+          toCircleKey={pair.toCircleKey}
+          circlesArray={circles}
+        />
       ))}
     </div>
   );
