@@ -1,4 +1,4 @@
 export interface PairOfCircles {
-  fromCircleKey: number;
-  toCircleKey: number;
+  fromCircleKey: string;
+  toCircleKey: string;
 }

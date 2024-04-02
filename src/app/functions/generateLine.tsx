@@ -29,7 +29,7 @@ export default function genearteLine(
     Math.pow(triangleHeight, 2) + Math.pow(triangleWidth, 2)
   );
   line.startX = (fromCircle.x + toCircle.x - line.length) / 2 + 25;
-  line.startY = (fromCircle.y + toCircle.y) / 2 + 25;
+  line.startY = (fromCircle.y + toCircle.y) / 2 + 50;
 
   const sinValue = triangleHeight / line.length;
   const asinValue = Math.asin(sinValue);

@@ -1,3 +1,5 @@
+import { colors } from "../constants/colors";
+
 export default function generateRandomColor(): string {
-  return Math.random().toString(16).substr(-6);
+  return colors[Math.floor(Math.random() * colors.length)];
 }

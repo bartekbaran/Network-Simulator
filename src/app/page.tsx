@@ -10,34 +10,67 @@ import {
   maxRight,
   maxBottom,
   maxTop,
-} from "./constants/min-max-values";
+  circleR,
+} from "./constants/static-values";
+import { DeviceType } from "./interfaces/DeviceType";
+import { Flow } from "./interfaces/Flow";
+import PopoverComponent from "./components/PopoverComponent";
 
 export default function Home() {
   const [circles, setCircles] = useState<Circle[]>([]);
+  const [flows, setFlows] = useState<Flow[]>([]);
 
-  function addCircle(icon: React.ComponentType<SvgIconProps>) {
+  function addCircle(
+    icon: React.ComponentType<SvgIconProps>,
+    deviceType: DeviceType,
+    key: string
+  ) {
     setCircles([
       ...circles,
       {
-        key: circles.length + 1,
+        key: key,
         x: Math.floor(Math.random() * (maxRight - maxLeft + 1) + maxLeft),
         y: Math.floor(Math.random() * (maxBottom - maxTop + 1) + maxTop),
-        r: 50,
-        color: "#" + generateRandomColor(),
+        r: circleR,
+        color: generateRandomColor(),
         icon: icon,
+        deviceType: deviceType,
       },
     ]);
   }
 
+  function editCircle(draggedCircle: Circle) {
+    setCircles(
+      circles.map((circle) =>
+        circle.key === draggedCircle.key
+          ? { ...circle, x: draggedCircle.x, y: draggedCircle.y }
+          : circle
+      )
+    );
+  }
+
+  function addFlow(flow: Flow) {
+    let id = flows.length + 1;
+    setFlows([
+      ...flows,
+      {
+        ...flow,
+        id: id,
+      },
+    ]);
+    console.log(flows);
+  }
+
   return (
-    <main className="bg-white flex min-h-screen flex-col items-center justify-between text-black">
-      <div className="grid grid-cols-12 w-full">
-        <div className="col-span-2">
-          <SimulatorToolbar addCircle={addCircle} />
-        </div>
-        <div className="col-span-10 bg-gray-100">
-          <Simulation _circles={circles}></Simulation>
-        </div>
+    <main className="font-sans antialiased">
+      <div className="bg-gray-100 min-h-screen mx-auto flex max-w-8xl px-4 sm:px-6 lg:px-8">
+        <SimulatorToolbar addCircle={addCircle} />
+        <Simulation
+          _circles={circles}
+          _editCircle={editCircle}
+          _addFlow={addFlow}
+        ></Simulation>
+        <PopoverComponent flows={flows}></PopoverComponent>
       </div>
     </main>
   );

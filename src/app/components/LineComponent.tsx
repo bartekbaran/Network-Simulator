@@ -8,14 +8,13 @@ function LineComponent({
   toCircleKey,
   circlesArray,
 }: {
-  fromCircleKey: number;
-  toCircleKey: number;
+  fromCircleKey: string;
+  toCircleKey: string;
   circlesArray: Circle[];
 }) {
   const [line, setLine] = useState<Line>(null);
 
   useEffect(() => {
-    console.log(circlesArray);
     if (circlesArray === null || circlesArray === undefined) {
       return;
     }
@@ -25,7 +24,6 @@ function LineComponent({
     );
     let toCircle = circlesArray.find((circle) => circle.key === toCircleKey);
     setLine(genearteLine(fromCircle, toCircle));
-    console.log("use effect");
   }, [circlesArray]);
 
   function getLineStyle(): React.CSSProperties {
@@ -36,7 +34,7 @@ function LineComponent({
       height: "2px",
       width: `${line.length}px`,
       backgroundColor: "black",
-      zIndex: "2",
+      zIndex: "1",
       rotate: line.isDecreasing
         ? "-" + line.degreeToBeApplied + "deg"
         : line.degreeToBeApplied + "deg",

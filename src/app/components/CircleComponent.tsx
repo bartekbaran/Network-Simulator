@@ -1,75 +1,88 @@
-import Draggable, { DraggableData } from "react-draggable";
+import Draggable, { DraggableData, DraggableEvent } from "react-draggable";
 import { Circle } from "../interfaces/Circle";
 import {
   maxLeft,
   maxRight,
   maxBottom,
   maxTop,
-} from "../constants/min-max-values";
+} from "../constants/static-values";
+import { useRef, useState } from "react";
+import generateCircleStyle from "../functions/styles/generateCircleStyle";
+import generateCircleContainerStyle from "../functions/styles/generateCircleContainerStyle";
+import { DeviceType } from "../interfaces/DeviceType";
 
 function CircleComponent({
   circle,
   addLine,
   isSelected,
   circleDragged,
+  setShowCreateFlowModal,
 }: {
   circle: Circle;
   addLine: any;
   isSelected: boolean;
   circleDragged: any;
+  setShowCreateFlowModal: any;
 }) {
-  const trackPos = (data: DraggableData) => {
-    circle = {
-      ...circle,
-      x: data.x,
-      y: data.y,
-    };
-    circleDragged(circle);
+  const [oldTimeStamp, setOldTimeStamp] = useState<number>(null);
+
+  const draggableRef = useRef(null);
+
+  const trackPos = (e: DraggableEvent, data: DraggableData) => {
+    if (oldTimeStamp === null || e.timeStamp - oldTimeStamp >= 10) {
+      setOldTimeStamp(e.timeStamp);
+      circle = {
+        ...circle,
+        x: data.x,
+        y: data.y,
+      };
+      circleDragged(circle);
+    }
   };
 
-  const handleClick = (e: {
+  const onContextMenu = (event: {
     nativeEvent: { button: number };
     preventDefault: () => void;
   }) => {
-    if (e.nativeEvent.button === 2) {
-      e.preventDefault();
+    if (event.nativeEvent.button === 2) {
+      event.preventDefault();
       addLine(circle);
+    }
+  };
+
+  const handleClick = (event: { detail: number }) => {
+    if (event.detail === 2) {
+      if (circle.deviceType === DeviceType.TrafficGenerator) {
+        setShowCreateFlowModal(circle);
+      }
     }
   };
 
   return (
     <Draggable
+      key={"draggable" + circle.key}
+      ref={draggableRef}
       bounds={{
         left: maxLeft,
         right: maxRight,
         bottom: maxBottom,
         top: maxTop,
       }}
-      onDrag={(e, data) => trackPos(data)}
+      onDrag={(e, data) => trackPos(e, data)}
       defaultPosition={{ x: circle.x, y: circle.y }}
     >
-      <div
-        key={circle.key}
-        style={{
-          position: "absolute",
-          cursor: "move",
-          margin: "auto",
-          userSelect: "none",
-          width: circle.r + "px",
-          height: circle.r + "px",
-          borderRadius: "50%",
-          borderStyle: "solid",
-          borderColor: isSelected ? "red" : "black",
-          borderWidth: "3px",
-          backgroundColor: circle.color,
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          zIndex: "3",
-        }}
-        onContextMenu={handleClick}
-      >
-        <circle.icon />
+      <div className={generateCircleContainerStyle()}>
+        <div>
+          <h1>{circle.key}</h1>
+        </div>
+        <div
+          key={circle.key}
+          className={generateCircleStyle(circle, isSelected)}
+          onContextMenu={onContextMenu}
+          onClick={handleClick}
+        >
+          <circle.icon />
+        </div>
       </div>
     </Draggable>
   );
