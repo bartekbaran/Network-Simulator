@@ -5,16 +5,23 @@ import LineComponent from "./LineComponent";
 import { PairOfCircles } from "../interfaces/PairOfCircles";
 import { Flow } from "../interfaces/Flow";
 import FlowModal from "./modal/FlowModal";
-import { DeviceType } from "../interfaces/DeviceType";
 
 function Simulation({
   _circles,
+  _trafficGeneratorArray,
   _editCircle,
   _addFlow,
+  _flowToBeEditted,
+  _editFlow,
+  _closeModal,
 }: {
   _circles: Circle[];
+  _trafficGeneratorArray: Circle[];
   _editCircle: any;
   _addFlow: any;
+  _flowToBeEditted: Flow;
+  _editFlow: boolean;
+  _closeModal: any;
 }) {
   const [pairsOfCircles, setPairsOfCircles] = useState<PairOfCircles[]>([]);
   const [lineBeginning, setLineBeginning] = useState<Circle>(null);
@@ -22,20 +29,27 @@ function Simulation({
   const [trafficGeneratorArray, setTrafficGeneratorArray] = useState<Circle[]>(
     []
   );
-
-  const [showCreateFlowModal, setShowCreateFlowModal] =
-    useState<boolean>(false);
+  const [showFlowModal, setShowFlowModal] = useState<boolean>(false);
   const [selectedSource, setSelectedSource] = useState<Circle>(null);
+  const [flowToBeEditted, setFlowToBeEditted] = useState<Flow>(null);
+  const [isEdit, setIsEdit] = useState<boolean>(false);
 
   useEffect(() => {
-    let tempCircles = _circles;
-    setCircles(tempCircles);
-    setTrafficGeneratorArray(
-      tempCircles.filter(
-        (circle) => circle.deviceType === DeviceType.TrafficGenerator
-      )
-    );
+    setCircles(_circles);
   }, [_circles]);
+
+  useEffect(() => {
+    setTrafficGeneratorArray(_trafficGeneratorArray);
+  }, [_trafficGeneratorArray]);
+
+  useEffect(() => {
+    setFlowToBeEditted(_flowToBeEditted);
+  }, [_flowToBeEditted]);
+
+  useEffect(() => {
+    setIsEdit(_editFlow);
+    setShowFlowModal(_editFlow);
+  }, [_editFlow]);
 
   function addLine(selectedCircle: Circle) {
     if (lineBeginning === null) {
@@ -64,14 +78,15 @@ function Simulation({
 
   function updateSourceAndShowFlowModal(circle: Circle) {
     setSelectedSource(circle);
-    setShowCreateFlowModal(true);
+    setShowFlowModal(true);
   }
 
   function handleCloseModal() {
-    setShowCreateFlowModal(false);
+    setShowFlowModal(false);
+    _closeModal();
+    setIsEdit(false);
+    setFlowToBeEditted(null);
   }
-
-  function handleFlowChange() {}
 
   return (
     <div id="simulation" className="relative" style={{ zIndex: "1" }}>
@@ -95,13 +110,13 @@ function Simulation({
         />
       ))}
       <FlowModal
-        isEdit={false}
-        showCreateFlowModal={showCreateFlowModal}
+        isEdit={isEdit}
+        flowToEditted={flowToBeEditted}
+        showModal={showFlowModal}
         handleCloseModal={handleCloseModal}
         selectedSource={selectedSource}
-        trafficGeneratorsArray={trafficGeneratorArray}
-        handleSaveFlow={addFlow}
-        handleFlowChange={handleFlowChange}
+        trafficGeneratorArray={trafficGeneratorArray}
+        handleSave={addFlow}
       ></FlowModal>
     </div>
   );

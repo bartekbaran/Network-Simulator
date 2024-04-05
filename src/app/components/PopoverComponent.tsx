@@ -3,7 +3,13 @@ import { ChevronDownIcon, PencilIcon } from "@heroicons/react/20/solid";
 import { Fragment } from "react";
 import { Flow } from "../interfaces/Flow";
 
-function PopoverComponent({ flows }: { flows: Flow[] }) {
+function PopoverComponent({
+  flows,
+  editFlow,
+}: {
+  flows: Flow[];
+  editFlow: any;
+}) {
   return (
     <div className="absolute right-5 top-16 w-full max-w-sm px-4">
       <Popover className="relative">
@@ -40,12 +46,16 @@ function PopoverComponent({ flows }: { flows: Flow[] }) {
                   <div className="relative grid gap-8 bg-white p-7 lg:grid-cols-1">
                     {flows.map((flow) => (
                       <div
-                        key={flow.id}
-                        className="-m-3 flex items-center rounded-lg p-2 transition duration-150 ease-in-out hover:bg-gray-50 focus:outline-none focus-visible:ring focus-visible:ring-orange-500/50"
+                        key={"id" + flow.id}
+                        className="-m-3 flex items-center rounded-lg p-2 transition duration-150 ease-in-out hover:bg-gray-50 
+                        focus:outline-none focus-visible:ring focus-visible:ring-orange-500/50"
                       >
-                        <div className="flex h-10 w-10 shrink-0 items-center justify-center text-white sm:h-12 sm:w-12">
+                        <button
+                          onClick={() => editFlow(flow)}
+                          className="flex h-10 w-10 shrink-0 items-center justify-center text-white sm:h-12 sm:w-12"
+                        >
                           <PencilIcon className="text-black bg-gray-100 rounded-md p-1 border-solid border-2 border-gray-200" />
-                        </div>
+                        </button>
                         <div className="ml-4">
                           <p className="text-sm font-medium text-gray-900">
                             Source: {flow && flow.source ? flow.source.key : ""}

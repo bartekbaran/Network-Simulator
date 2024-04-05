@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import SimulatorToolbar from "./components/SimulatorToolbar";
 import { Circle } from "./interfaces/Circle";
 import { SvgIconProps } from "@mui/material";
@@ -18,25 +18,32 @@ import PopoverComponent from "./components/PopoverComponent";
 
 export default function Home() {
   const [circles, setCircles] = useState<Circle[]>([]);
+  const [trafficGeneratorArray, setTrafficGeneratorArray] = useState<Circle[]>(
+    []
+  );
   const [flows, setFlows] = useState<Flow[]>([]);
+  const [showFlowModal, setShowFlowModal] = useState<boolean>(false);
+  const [flowToBeEditted, setFlowToBeEditted] = useState<Flow>(null);
 
   function addCircle(
     icon: React.ComponentType<SvgIconProps>,
     deviceType: DeviceType,
     key: string
   ) {
-    setCircles([
-      ...circles,
-      {
-        key: key,
-        x: Math.floor(Math.random() * (maxRight - maxLeft + 1) + maxLeft),
-        y: Math.floor(Math.random() * (maxBottom - maxTop + 1) + maxTop),
-        r: circleR,
-        color: generateRandomColor(),
-        icon: icon,
-        deviceType: deviceType,
-      },
-    ]);
+    let newCircle = {
+      key: key,
+      x: Math.floor(Math.random() * (maxRight - maxLeft + 1) + maxLeft),
+      y: Math.floor(Math.random() * (maxBottom - maxTop + 1) + maxTop),
+      r: circleR,
+      color: generateRandomColor(),
+      icon: icon,
+      deviceType: deviceType,
+    };
+
+    if (deviceType === DeviceType.TrafficGenerator) {
+      setTrafficGeneratorArray([...trafficGeneratorArray, newCircle]);
+    }
+    setCircles([...circles, newCircle]);
   }
 
   function editCircle(draggedCircle: Circle) {
@@ -49,16 +56,31 @@ export default function Home() {
     );
   }
 
-  function addFlow(flow: Flow) {
-    let id = flows.length + 1;
-    setFlows([
-      ...flows,
-      {
-        ...flow,
-        id: id,
-      },
-    ]);
-    console.log(flows);
+  function addFlow(newFlow: Flow) {
+    if (newFlow.id) {
+      let newFlows = [...flows];
+      newFlows[newFlow.id - 1] = newFlow;
+      setFlows(newFlows);
+    } else {
+      let id = flows.length + 1;
+      setFlows([
+        ...flows,
+        {
+          ...newFlow,
+          id: id,
+        },
+      ]);
+    }
+  }
+
+  function showEditModal(flow: Flow) {
+    setFlowToBeEditted(flow);
+    setShowFlowModal(true);
+  }
+
+  function handleCloseModal() {
+    setFlowToBeEditted(null);
+    setShowFlowModal(false);
   }
 
   return (
@@ -67,10 +89,17 @@ export default function Home() {
         <SimulatorToolbar addCircle={addCircle} />
         <Simulation
           _circles={circles}
+          _trafficGeneratorArray={trafficGeneratorArray}
           _editCircle={editCircle}
           _addFlow={addFlow}
+          _flowToBeEditted={flowToBeEditted}
+          _editFlow={showFlowModal}
+          _closeModal={handleCloseModal}
         ></Simulation>
-        <PopoverComponent flows={flows}></PopoverComponent>
+        <PopoverComponent
+          flows={flows}
+          editFlow={showEditModal}
+        ></PopoverComponent>
       </div>
     </main>
   );

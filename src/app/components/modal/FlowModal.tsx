@@ -5,42 +5,52 @@ import { Flow } from "symulator/app/interfaces/Flow";
 import ListboxComponent from "../ListboxComponent";
 import ColoredButtonComponent from "../ColoredButtonComponent";
 import UncoloredButtonComponent from "../UncoloredButtonComponent";
+import { packetSizes } from "symulator/app/constants/packetSizes";
+import { flowTypes } from "symulator/app/constants/flowTypes";
 
 function FlowModal({
   isEdit,
-  showCreateFlowModal,
+  flowToEditted,
+  showModal,
   handleCloseModal,
   selectedSource,
-  handleSaveFlow,
-  trafficGeneratorsArray,
-  handleFlowChange,
+  handleSave,
+  trafficGeneratorArray,
 }: {
   isEdit: boolean;
-  showCreateFlowModal: boolean;
+  flowToEditted: Flow;
+  showModal: boolean;
   handleCloseModal: any;
   selectedSource: Circle;
-  handleSaveFlow: any;
-  trafficGeneratorsArray: Circle[];
-  handleFlowChange;
+  handleSave: any;
+  trafficGeneratorArray: Circle[];
 }) {
   const [newFlow, setNewFlow] = useState<Flow>(null);
+
   const [source, setSource] = useState<Circle>(null);
   const [destination, setDestination] = useState<Circle>(null);
+  const [packetSize, setPacketSize] = useState<number>(null);
+  const [flowType, setFlowType] = useState<string>(null);
 
   function clearDataAndCloseModal() {
     handleCloseModal();
     setNewFlow(null);
     setSource(null);
     setDestination(null);
+    setPacketSize(null);
+    setFlowType(null);
   }
 
   function submitFlow(event: any) {
     event.preventDefault();
-    let newFlowToBeSaved = {
+    let flowToBeSaved = {
       ...newFlow,
+      source: source,
       destination: destination,
+      packetSize: packetSize,
+      flowType: flowType,
     };
-    handleSaveFlow(newFlowToBeSaved);
+    handleSave(flowToBeSaved);
     clearDataAndCloseModal();
   }
 
@@ -57,8 +67,21 @@ function FlowModal({
     });
   }, [selectedSource]);
 
+  useEffect(() => {
+    if (flowToEditted) {
+      setNewFlow({
+        ...newFlow,
+        id: flowToEditted.id,
+      });
+      setSource(flowToEditted.source);
+      setDestination(flowToEditted.destination);
+      setPacketSize(flowToEditted.packetSize);
+      setFlowType(flowToEditted.flowType);
+    }
+  }, [flowToEditted]);
+
   return (
-    <Transition.Root show={showCreateFlowModal} as={Fragment}>
+    <Transition.Root show={showModal} as={Fragment}>
       <Dialog as="div" className="relative z-10" onClose={handleCloseModal}>
         <Transition.Child
           as={Fragment}
@@ -96,20 +119,46 @@ function FlowModal({
                       {isEdit ? "Edit flow" : "Add flow"}
                     </Dialog.Title>
                     <form action="submit" onSubmit={submitFlow}>
-                      <p className="mt-8 mb-1">From:</p>
-                      <ListboxComponent
-                        selected={source}
-                        options={trafficGeneratorsArray}
-                        keyTemplate="source"
-                        functionToUpdate={setSource}
-                      ></ListboxComponent>
-                      <p className="mt-5 mb-1">To:</p>
-                      <ListboxComponent
-                        selected={destination}
-                        options={trafficGeneratorsArray}
-                        keyTemplate="destination"
-                        functionToUpdate={setDestination}
-                      ></ListboxComponent>
+                      <div className="my-3 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3 text-left">
+                        <div>
+                          <ListboxComponent
+                            selected={source}
+                            options={trafficGeneratorArray}
+                            keyTemplate="source"
+                            description="From"
+                            functionToUpdate={setSource}
+                          ></ListboxComponent>
+                        </div>
+                        <div>
+                          <ListboxComponent
+                            selected={destination}
+                            options={trafficGeneratorArray}
+                            keyTemplate="destination"
+                            description="To"
+                            functionToUpdate={setDestination}
+                          ></ListboxComponent>
+                        </div>
+                      </div>
+                      <div className="my-3 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3 text-left">
+                        <div>
+                          <ListboxComponent
+                            selected={packetSize}
+                            options={packetSizes}
+                            keyTemplate="packetSize"
+                            description="Packet size"
+                            functionToUpdate={setPacketSize}
+                          ></ListboxComponent>
+                        </div>
+                        <div>
+                          <ListboxComponent
+                            selected={flowType}
+                            options={flowTypes}
+                            keyTemplate="flowType"
+                            description="Flow type"
+                            functionToUpdate={setFlowType}
+                          ></ListboxComponent>
+                        </div>
+                      </div>
                       <div className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
                         <ColoredButtonComponent
                           color="green"

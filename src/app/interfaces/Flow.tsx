@@ -7,5 +7,5 @@ export interface Flow {
   destination: Circle;
   averageLoad: number;
   packetSize: number;
-  flowType: FlowType;
+  flowType: string;
 }
