@@ -1,3 +1,4 @@
+import React from "react";
 import { SvgIconProps } from "@mui/material";
 import { DeviceType } from "./DeviceType";
 

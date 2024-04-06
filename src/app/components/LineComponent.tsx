@@ -1,47 +1,30 @@
-import { useEffect, useState } from "react";
-import { Circle } from "../interfaces/Circle";
-import { Line } from "../interfaces/Line";
-import genearteLine from "../functions/generateLine";
+import React from "react";
+import { Link } from "../interfaces/Link";
 
-function LineComponent({
-  fromCircleKey,
-  toCircleKey,
-  circlesArray,
+function LinkComponent({
+  link,
+  openLinkModal
 }: {
-  fromCircleKey: string;
-  toCircleKey: string;
-  circlesArray: Circle[];
+  link: Link;
+  openLinkModal: any;
 }) {
-  const [line, setLine] = useState<Line>(null);
 
-  useEffect(() => {
-    if (circlesArray === null || circlesArray === undefined) {
-      return;
-    }
-
-    let fromCircle = circlesArray.find(
-      (circle) => circle.key === fromCircleKey
-    );
-    let toCircle = circlesArray.find((circle) => circle.key === toCircleKey);
-    setLine(genearteLine(fromCircle, toCircle));
-  }, [circlesArray]);
-
-  function getLineStyle(): React.CSSProperties {
+  function getLinkStyle(): React.CSSProperties {
     return {
       position: "absolute",
-      top: `${line.startY}px`,
-      left: `${line.startX}px`,
+      top: `${link.startY}px`,
+      left: `${link.startX}px`,
       height: "2px",
-      width: `${line.length}px`,
+      width: `${link.length}px`,
       backgroundColor: "black",
       zIndex: "1",
-      rotate: line.isDecreasing
-        ? "-" + line.degreeToBeApplied + "deg"
-        : line.degreeToBeApplied + "deg",
+      rotate: link.isDecreasing
+        ? "-" + link.degreeToBeApplied + "deg"
+        : link.degreeToBeApplied + "deg",
     };
   }
 
-  return <>{line !== null && <div style={getLineStyle()}></div>}</>;
+  return <>{link !== null && <div onClick={() => openLinkModal(link)} style={getLinkStyle()}></div>}</>;
 }
 
-export default LineComponent;
+export default LinkComponent;

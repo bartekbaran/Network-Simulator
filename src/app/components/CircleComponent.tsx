@@ -13,13 +13,13 @@ import { DeviceType } from "../interfaces/DeviceType";
 
 function CircleComponent({
   circle,
-  addLine,
+  addLink,
   isSelected,
   circleDragged,
   setShowCreateFlowModal,
 }: {
   circle: Circle;
-  addLine: any;
+  addLink: any;
   isSelected: boolean;
   circleDragged: any;
   setShowCreateFlowModal: any;
@@ -46,7 +46,7 @@ function CircleComponent({
   }) => {
     if (event.nativeEvent.button === 2) {
       event.preventDefault();
-      addLine(circle);
+      addLink(circle);
     }
   };
 

@@ -1,4 +1,6 @@
+import {Circle} from "symulator/app/interfaces/Circle";
+
 export interface PairOfCircles {
-  fromCircleKey: string;
-  toCircleKey: string;
+  fromCircle: Circle ;
+  toCircle: Circle;
 }

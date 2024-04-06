@@ -10,7 +10,7 @@ import { flowTypes } from "symulator/app/constants/flowTypes";
 
 function FlowModal({
   isEdit,
-  flowToEditted,
+  flowToEdited,
   showModal,
   handleCloseModal,
   selectedSource,
@@ -18,7 +18,7 @@ function FlowModal({
   trafficGeneratorArray,
 }: {
   isEdit: boolean;
-  flowToEditted: Flow;
+  flowToEdited: Flow;
   showModal: boolean;
   handleCloseModal: any;
   selectedSource: Circle;
@@ -68,17 +68,17 @@ function FlowModal({
   }, [selectedSource]);
 
   useEffect(() => {
-    if (flowToEditted) {
+    if (flowToEdited) {
       setNewFlow({
         ...newFlow,
-        id: flowToEditted.id,
+        id: flowToEdited.id,
       });
-      setSource(flowToEditted.source);
-      setDestination(flowToEditted.destination);
-      setPacketSize(flowToEditted.packetSize);
-      setFlowType(flowToEditted.flowType);
+      setSource(flowToEdited.source);
+      setDestination(flowToEdited.destination);
+      setPacketSize(flowToEdited.packetSize);
+      setFlowType(flowToEdited.flowType);
     }
-  }, [flowToEditted]);
+  }, [flowToEdited]);
 
   return (
     <Transition.Root show={showModal} as={Fragment}>
@@ -119,11 +119,12 @@ function FlowModal({
                       {isEdit ? "Edit flow" : "Add flow"}
                     </Dialog.Title>
                     <form action="submit" onSubmit={submitFlow}>
-                      <div className="my-3 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3 text-left">
+                      <div className="my-5 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3 text-left">
                         <div>
                           <ListboxComponent
                             selected={source}
                             options={trafficGeneratorArray}
+                            optionToBeDisabled={null}
                             keyTemplate="source"
                             description="From"
                             functionToUpdate={setSource}
@@ -133,6 +134,7 @@ function FlowModal({
                           <ListboxComponent
                             selected={destination}
                             options={trafficGeneratorArray}
+                            optionToBeDisabled={source}
                             keyTemplate="destination"
                             description="To"
                             functionToUpdate={setDestination}
@@ -144,6 +146,7 @@ function FlowModal({
                           <ListboxComponent
                             selected={packetSize}
                             options={packetSizes}
+                            optionToBeDisabled={null}
                             keyTemplate="packetSize"
                             description="Packet size"
                             functionToUpdate={setPacketSize}
@@ -153,6 +156,7 @@ function FlowModal({
                           <ListboxComponent
                             selected={flowType}
                             options={flowTypes}
+                            optionToBeDisabled={null}
                             keyTemplate="flowType"
                             description="Flow type"
                             functionToUpdate={setFlowType}

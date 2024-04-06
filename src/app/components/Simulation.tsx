@@ -1,17 +1,19 @@
 import { useEffect, useState } from "react";
 import { Circle } from "../interfaces/Circle";
 import CircleComponent from "./CircleComponent";
-import LineComponent from "./LineComponent";
-import { PairOfCircles } from "../interfaces/PairOfCircles";
 import { Flow } from "../interfaces/Flow";
 import FlowModal from "./modal/FlowModal";
+import {Link} from "symulator/app/interfaces/Link";
+import generateLink from "symulator/app/functions/generateLink";
+import LinkModal from "symulator/app/components/modal/LinkModal";
+import LinkComponent from "symulator/app/components/LineComponent";
 
 function Simulation({
   _circles,
   _trafficGeneratorArray,
   _editCircle,
   _addFlow,
-  _flowToBeEditted,
+  _flowToBeEdited,
   _editFlow,
   _closeModal,
 }: {
@@ -19,61 +21,88 @@ function Simulation({
   _trafficGeneratorArray: Circle[];
   _editCircle: any;
   _addFlow: any;
-  _flowToBeEditted: Flow;
+  _flowToBeEdited: Flow;
   _editFlow: boolean;
   _closeModal: any;
 }) {
-  const [pairsOfCircles, setPairsOfCircles] = useState<PairOfCircles[]>([]);
-  const [lineBeginning, setLineBeginning] = useState<Circle>(null);
   const [circles, setCircles] = useState<Circle[]>([]);
-  const [trafficGeneratorArray, setTrafficGeneratorArray] = useState<Circle[]>(
-    []
-  );
-  const [showFlowModal, setShowFlowModal] = useState<boolean>(false);
+  const [trafficGenerators, setTrafficGenerators] = useState<Circle[]>([]);
+
+  const [links, setLinks] = useState<Link[]>([]);
+  const [linkBeginning, setLinkBeginning] = useState<Circle>(null);
   const [selectedSource, setSelectedSource] = useState<Circle>(null);
-  const [flowToBeEditted, setFlowToBeEditted] = useState<Flow>(null);
-  const [isEdit, setIsEdit] = useState<boolean>(false);
+
+  const [showFlowModal, setShowFlowModal] = useState<boolean>(false);
+  const [showLinkModal, setShowLinkModal] = useState<boolean>(false);
+
+  const [flowToBeEdited, setFlowToBeEdited] = useState<Flow>(null);
+  const [linkToBeEdited, setLinkToBeEdited] = useState<Link>(null);
+
+  const [isFlowEdit, setIsFlowEdit] = useState<boolean>(false);
+  const [isLinkEdit, setIsLinkEdit] = useState<boolean>(false);
 
   useEffect(() => {
     setCircles(_circles);
   }, [_circles]);
 
   useEffect(() => {
-    setTrafficGeneratorArray(_trafficGeneratorArray);
+    setTrafficGenerators(_trafficGeneratorArray);
   }, [_trafficGeneratorArray]);
 
   useEffect(() => {
-    setFlowToBeEditted(_flowToBeEditted);
-  }, [_flowToBeEditted]);
+    setFlowToBeEdited(_flowToBeEdited);
+  }, [_flowToBeEdited]);
 
   useEffect(() => {
-    setIsEdit(_editFlow);
+    setIsFlowEdit(_editFlow);
     setShowFlowModal(_editFlow);
   }, [_editFlow]);
 
-  function addLine(selectedCircle: Circle) {
-    if (lineBeginning === null) {
-      setLineBeginning(selectedCircle);
-    } else if (lineBeginning === selectedCircle) {
-      setLineBeginning(null);
+  function addLink(selectedCircle: Circle) {
+    if (linkBeginning === null) {
+      setLinkBeginning(selectedCircle);
+    } else if (linkBeginning === selectedCircle) {
+      setLinkBeginning(null);
     } else {
-      setPairsOfCircles([
-        ...pairsOfCircles,
-        {
-          fromCircleKey: lineBeginning.key,
-          toCircleKey: selectedCircle.key,
-        },
+      const indexOfDuplicate = links.findIndex(
+        (link) =>
+          (link.pairOfCircles.toCircle === selectedCircle || link.pairOfCircles.fromCircle === selectedCircle) &&
+          (link.pairOfCircles.toCircle === linkBeginning || link.pairOfCircles.fromCircle === linkBeginning)
+      );
+
+      if (indexOfDuplicate !== -1) {
+        const newLinks = [...links]
+        newLinks.splice(indexOfDuplicate, 1);
+        setLinks(newLinks);
+        setLinkBeginning(null);
+        return;
+      }
+
+      let newLink = generateLink(links.length + 1, linkBeginning, selectedCircle);
+      setLinks([
+        ...links,
+        newLink
       ]);
-      setLineBeginning(null);
+      setLinkBeginning(null);
     }
   }
 
   function editCircle(draggedCircle: Circle) {
     _editCircle(draggedCircle);
+    let updatedLinks = links.map((link) => link.pairOfCircles.toCircle.key === draggedCircle.key ?
+        generateLink(link.id, link.pairOfCircles.fromCircle, draggedCircle) : link)
+      .map((link) => link.pairOfCircles.fromCircle.key === draggedCircle.key ?
+        generateLink(link.id, draggedCircle, link.pairOfCircles.toCircle) : link);
+    setLinks(updatedLinks);
   }
 
   function addFlow(flow: Flow) {
     _addFlow(flow);
+  }
+
+  function editLink(newLink: Link) {
+    let newLinks = links.map((link) => link.id === newLink.id ? newLink : link);
+    setLinks(newLinks);
   }
 
   function updateSourceAndShowFlowModal(circle: Circle) {
@@ -81,11 +110,19 @@ function Simulation({
     setShowFlowModal(true);
   }
 
+  function updateOpenedLineAndShowLineModal(link: Link) {
+    setLinkToBeEdited(link);
+    setShowLinkModal(true);
+  }
+
   function handleCloseModal() {
     setShowFlowModal(false);
+    setShowLinkModal(false);
     _closeModal();
-    setIsEdit(false);
-    setFlowToBeEditted(null);
+    setIsFlowEdit(false);
+    setIsLinkEdit(false);
+    setFlowToBeEdited(null);
+    setLinkToBeEdited(null);
   }
 
   return (
@@ -93,31 +130,33 @@ function Simulation({
       {circles !== undefined &&
         circles.map((circle: Circle) => (
           <CircleComponent
+            key={circle.key}
             isSelected={
-              lineBeginning !== null && circle.key === lineBeginning.key
+              linkBeginning !== null && circle.key === linkBeginning.key
             }
             circle={circle}
-            addLine={addLine}
+            addLink={addLink}
             circleDragged={editCircle}
             setShowCreateFlowModal={updateSourceAndShowFlowModal}
           />
         ))}
-      {pairsOfCircles.map((pair: PairOfCircles) => (
-        <LineComponent
-          fromCircleKey={pair.fromCircleKey}
-          toCircleKey={pair.toCircleKey}
-          circlesArray={circles}
+      {links.map((link: Link) => (
+        <LinkComponent
+          key={link.id}
+          link={link}
+          openLinkModal={updateOpenedLineAndShowLineModal}
         />
       ))}
       <FlowModal
-        isEdit={isEdit}
-        flowToEditted={flowToBeEditted}
+        isEdit={isFlowEdit}
+        flowToEdited={flowToBeEdited}
         showModal={showFlowModal}
         handleCloseModal={handleCloseModal}
         selectedSource={selectedSource}
-        trafficGeneratorArray={trafficGeneratorArray}
+        trafficGeneratorArray={trafficGenerators}
         handleSave={addFlow}
       ></FlowModal>
+      <LinkModal isEdit={isLinkEdit} linkToBeEdited={linkToBeEdited} showModal={showLinkModal} handleCloseModal={handleCloseModal} handleSave={editLink}></LinkModal>
     </div>
   );
 }

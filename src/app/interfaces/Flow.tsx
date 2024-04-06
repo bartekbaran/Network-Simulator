@@ -1,5 +1,4 @@
 import { Circle } from "./Circle";
-import { FlowType } from "./FlowType";
 
 export interface Flow {
   id: number;
