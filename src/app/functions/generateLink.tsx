@@ -14,7 +14,7 @@ export default function generateLink(
     length: 0,
     degreeToBeApplied: 0,
     isDecreasing: false,
-    bandwidth: null
+    bandwidth: 100000
   };
 
   if (fromCircle.x > toCircle.x) {

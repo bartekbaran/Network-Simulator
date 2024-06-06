@@ -13,6 +13,7 @@ function Simulation({
   _trafficGeneratorArray,
   _editCircle,
   _addFlow,
+  _setLinks,
   _flowToBeEdited,
   _editFlow,
   _closeModal,
@@ -21,6 +22,7 @@ function Simulation({
   _trafficGeneratorArray: Circle[];
   _editCircle: any;
   _addFlow: any;
+  _setLinks: any;
   _flowToBeEdited: Flow;
   _editFlow: boolean;
   _closeModal: any;
@@ -80,6 +82,10 @@ function Simulation({
 
       let newLink = generateLink(links.length + 1, linkBeginning, selectedCircle);
       setLinks([
+        ...links,
+        newLink
+      ]);
+      _setLinks([
         ...links,
         newLink
       ]);
@@ -149,7 +155,7 @@ function Simulation({
       ))}
       <FlowModal
         isEdit={isFlowEdit}
-        flowToEdited={flowToBeEdited}
+        flowToBeEdited={flowToBeEdited}
         showModal={showFlowModal}
         handleCloseModal={handleCloseModal}
         selectedSource={selectedSource}

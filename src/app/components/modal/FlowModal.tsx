@@ -7,10 +7,11 @@ import ColoredButtonComponent from "../ColoredButtonComponent";
 import UncoloredButtonComponent from "../UncoloredButtonComponent";
 import { packetSizes } from "symulator/app/constants/packetSizes";
 import { flowTypes } from "symulator/app/constants/flowTypes";
+import InputComponent from "symulator/app/components/InputComponent";
 
 function FlowModal({
   isEdit,
-  flowToEdited,
+  flowToBeEdited,
   showModal,
   handleCloseModal,
   selectedSource,
@@ -18,7 +19,7 @@ function FlowModal({
   trafficGeneratorArray,
 }: {
   isEdit: boolean;
-  flowToEdited: Flow;
+  flowToBeEdited: Flow;
   showModal: boolean;
   handleCloseModal: any;
   selectedSource: Circle;
@@ -31,6 +32,16 @@ function FlowModal({
   const [destination, setDestination] = useState<Circle>(null);
   const [packetSize, setPacketSize] = useState<number>(null);
   const [flowType, setFlowType] = useState<string>(null);
+  const [time, setTime] = useState<number>(null);
+  const [avgBandwidth, setAvgBandwidth] = useState<number>(null);
+
+  const handleSetTime = (event) => {
+    setTime(event.target.value);
+  };
+
+  const handleSetAvgBandwidth = (event) => {
+    setAvgBandwidth(event.target.value)
+  }
 
   function clearDataAndCloseModal() {
     handleCloseModal();
@@ -39,6 +50,8 @@ function FlowModal({
     setDestination(null);
     setPacketSize(null);
     setFlowType(null);
+    setTime(null);
+    setAvgBandwidth(null);
   }
 
   function submitFlow(event: any) {
@@ -49,6 +62,8 @@ function FlowModal({
       destination: destination,
       packetSize: packetSize,
       flowType: flowType,
+      time: time,
+      avgBandwidth: avgBandwidth
     };
     handleSave(flowToBeSaved);
     clearDataAndCloseModal();
@@ -68,17 +83,19 @@ function FlowModal({
   }, [selectedSource]);
 
   useEffect(() => {
-    if (flowToEdited) {
+    if (flowToBeEdited) {
       setNewFlow({
         ...newFlow,
-        id: flowToEdited.id,
+        id: flowToBeEdited.id,
       });
-      setSource(flowToEdited.source);
-      setDestination(flowToEdited.destination);
-      setPacketSize(flowToEdited.packetSize);
-      setFlowType(flowToEdited.flowType);
+      setSource(flowToBeEdited.source);
+      setDestination(flowToBeEdited.destination);
+      setPacketSize(flowToBeEdited.packetSize);
+      setFlowType(flowToBeEdited.flowType);
+      setTime(flowToBeEdited.time);
+      setAvgBandwidth(flowToBeEdited.avgBandwidth);
     }
-  }, [flowToEdited]);
+  }, [flowToBeEdited]);
 
   return (
     <Transition.Root show={showModal} as={Fragment}>
@@ -107,7 +124,7 @@ function FlowModal({
               leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
               <Dialog.Panel
-                className="relative transform overflow-visible rounded-lg bg-white px-4 pb-4 pt-5 
+                className="relative transform overflow-visible rounded-lg bg-white px-4 pb-4 pt-5
                   text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6"
               >
                 <div>
@@ -161,6 +178,18 @@ function FlowModal({
                             description="Flow type"
                             functionToUpdate={setFlowType}
                           ></ListboxComponent>
+                        </div>
+                      </div>
+                      <div className="my-3 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3 text-left">
+                        <div>
+                          <InputComponent
+                            name="Time"
+                            defaultValue={time}
+                            functionToUpdate={handleSetTime}
+                          ></InputComponent>
+                        </div>
+                        <div>
+                          <InputComponent name="Average bandwidth" defaultValue={avgBandwidth} functionToUpdate={handleSetAvgBandwidth}></InputComponent>
                         </div>
                       </div>
                       <div className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">

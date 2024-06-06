@@ -8,7 +8,7 @@ import { useState } from "react";
 
 function SimulatorToolbar(props: any) {
   const [routerCounter, setRouterCounter] = useState<number>(0);
-  const [switchCouter, setSwitchCounter] = useState<number>(0);
+  const [switchCounter, setSwitchCounter] = useState<number>(0);
   const [trafficGeneratorCounter, setTrafficGeneratorCounter] =
     useState<number>(0);
 
@@ -27,7 +27,7 @@ function SimulatorToolbar(props: any) {
         setRouterCounter(newRouterCounter);
         return newRouterCounter;
       case DeviceType.Switch:
-        let newSwitchCounter = switchCouter + 1;
+        let newSwitchCounter = switchCounter + 1;
         setSwitchCounter(newSwitchCounter);
         return newSwitchCounter;
       case DeviceType.TrafficGenerator:

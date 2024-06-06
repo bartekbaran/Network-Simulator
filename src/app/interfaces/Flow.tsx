@@ -7,4 +7,6 @@ export interface Flow {
   averageLoad: number;
   packetSize: number;
   flowType: string;
+  time: number;
+  avgBandwidth: number;
 }

@@ -3,6 +3,7 @@ import { SvgIconProps } from "@mui/material";
 import { DeviceType } from "./DeviceType";
 
 export interface Circle {
+  id: number;
   key: string;
   x: number;
   y: number;
