@@ -21,6 +21,8 @@ import axios from "axios";
 import {mapLinkToEdge} from "symulator/app/functions/mappers/mapLinkToEdge";
 import {mapFlowForBackendFlow} from "symulator/app/functions/mappers/mapFlowForBackendFlow";
 import {mapCircleToNode} from "symulator/app/functions/mappers/mapCircleToNode";
+import {ResponseData} from "symulator/app/interfaces/backend/ResponseData";
+import ResultsModal from "symulator/app/components/modal/ResultsModal";
 
 export default function Home() {
   const [circles, setCircles] = useState<Circle[]>([]);
@@ -29,6 +31,8 @@ export default function Home() {
   const [flows, setFlows] = useState<Flow[]>([]);
   const [flowToBeEdited, setFlowToBeEdited] = useState<Flow>(null);
   const [showFlowModal, setShowFlowModal] = useState<boolean>(false);
+  const [results, setResults] = useState<ResponseData>(null);
+  const [showResultsModal, setShowResultsModal] = useState<boolean>(false);
 
   function addCircle(
     icon: React.ComponentType<SvgIconProps>,
@@ -84,7 +88,9 @@ export default function Home() {
 
   function handleCloseModal() {
     setFlowToBeEdited(null);
+    setResults(null);
     setShowFlowModal(false);
+    setShowResultsModal(false);
   }
 
   async function runSimulation() {
@@ -97,7 +103,13 @@ export default function Home() {
       nodes: nodes,
       flows: backendFlows
     });
-    console.log(response.data);
+    const results = {
+      "delay": response.data.delay,
+      "jitter": response.data.jitter,
+      "packetDrop": response.data.packetDrop
+    } as ResponseData;
+    setResults(results);
+    setShowResultsModal(true);
   }
 
   return (
@@ -119,6 +131,11 @@ export default function Home() {
           editFlow={showEditModal}
           showPopover={flows.length > 0}
         ></PopoverComponent>
+        {results !== null && <ResultsModal
+          _results={results}
+          showModal={showResultsModal}
+          handleCloseModal={handleCloseModal}
+        ></ResultsModal>}
         <RunSimulationComponent
           runSimulation={runSimulation}
         ></RunSimulationComponent>
