@@ -5,7 +5,7 @@ import {
   maxRight,
   maxBottom,
   maxTop,
-} from "../constants/static-values";
+} from "../constants/staticValues";
 import { useRef, useState } from "react";
 import generateCircleStyle from "../functions/styles/generateCircleStyle";
 import generateCircleContainerStyle from "../functions/styles/generateCircleContainerStyle";

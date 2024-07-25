@@ -13,9 +13,8 @@ function ResultsModal({
 }) {
 	const [results, setResults] = useState<ResponseData>(null);
 
-	function clearDataAndCloseModal() {
-		handleCloseModal();
-		setResults(null);
+	function roundUpToDecimal(num: number): number {
+		return Math.ceil(num * 100_000) / 100;
 	}
 
 	useEffect(() => {
@@ -66,13 +65,13 @@ function ResultsModal({
 										</Dialog.Title>
 										<div>
 											<Field>
-												<Label>Delay: {results ? results.delay : 0}</Label>
+												<Label>Delay: {results ? roundUpToDecimal(results.delay) : 0}ms</Label>
 											</Field>
 											<Field>
-												<Label>Jitter: {results ? results.jitter : 0}</Label>
+												<Label>Jitter: {results ? roundUpToDecimal(results.jitter) : 0}ms</Label>
 											</Field>
 											<Field>
-												<Label>Packet drop: {results ? results.packetDrop : 0}</Label>
+												<Label>Packet drop: {results ? results.packetDrop : 0} packets</Label>
 											</Field>
 										</div>
 									</div>

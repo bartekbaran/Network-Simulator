@@ -11,7 +11,7 @@ import {
   maxBottom,
   maxTop,
   circleR,
-} from "./constants/static-values";
+} from "./constants/staticValues";
 import { DeviceType } from "./interfaces/DeviceType";
 import { Flow } from "./interfaces/Flow";
 import PopoverComponent from "./components/PopoverComponent";
@@ -23,6 +23,7 @@ import {mapFlowForBackendFlow} from "symulator/app/functions/mappers/mapFlowForB
 import {mapCircleToNode} from "symulator/app/functions/mappers/mapCircleToNode";
 import {ResponseData} from "symulator/app/interfaces/backend/ResponseData";
 import ResultsModal from "symulator/app/components/modal/ResultsModal";
+import {getPrediction} from "symulator/app/services/PredictionService";
 
 export default function Home() {
   const [circles, setCircles] = useState<Circle[]>([]);
@@ -94,21 +95,9 @@ export default function Home() {
   }
 
   async function runSimulation() {
-    let edges = links.map(mapLinkToEdge);
-    let backendFlows = flows.map(mapFlowForBackendFlow);
-    let nodes = circles.map(mapCircleToNode);
-
-    const response = await axios.post("http://127.0.0.1:5000/predict", {
-      edges: edges,
-      nodes: nodes,
-      flows: backendFlows
-    });
-    const results = {
-      "delay": response.data.delay,
-      "jitter": response.data.jitter,
-      "packetDrop": response.data.packetDrop
-    } as ResponseData;
-    setResults(results);
+    getPrediction(links, flows, circles).then(results => {
+      setResults(results);
+    })
     setShowResultsModal(true);
   }
 
