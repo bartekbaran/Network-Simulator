@@ -1,5 +1,6 @@
 export interface ResponseData {
 	delay: number,
 	jitter: number,
-	packetDrop: number
+	packetDrop: number,
+	fromSimulator: boolean
 }

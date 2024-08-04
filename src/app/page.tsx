@@ -17,13 +17,11 @@ import { Flow } from "./interfaces/Flow";
 import PopoverComponent from "./components/PopoverComponent";
 import RunSimulationComponent from "symulator/app/components/RunSimulationComponent";
 import {Link} from "symulator/app/interfaces/Link";
-import axios from "axios";
-import {mapLinkToEdge} from "symulator/app/functions/mappers/mapLinkToEdge";
-import {mapFlowForBackendFlow} from "symulator/app/functions/mappers/mapFlowForBackendFlow";
-import {mapCircleToNode} from "symulator/app/functions/mappers/mapCircleToNode";
 import {ResponseData} from "symulator/app/interfaces/backend/ResponseData";
 import ResultsModal from "symulator/app/components/modal/ResultsModal";
-import {getPrediction} from "symulator/app/services/PredictionService";
+import {getPredictionFromModel} from "symulator/app/services/PredictionService";
+import {getCalculationsFromSimulator} from "symulator/app/services/SimulatorService";
+import GetPredictionComponent from "symulator/app/components/GetPredictionComponent";
 
 export default function Home() {
   const [circles, setCircles] = useState<Circle[]>([]);
@@ -95,7 +93,14 @@ export default function Home() {
   }
 
   async function runSimulation() {
-    getPrediction(links, flows, circles).then(results => {
+    getCalculationsFromSimulator(links, flows, circles).then(results => {
+      setResults(results);
+    })
+    setShowResultsModal(true);
+  }
+
+  async function getPrediction() {
+    getPredictionFromModel(links, flows, circles).then(results => {
       setResults(results);
     })
     setShowResultsModal(true);
@@ -125,6 +130,9 @@ export default function Home() {
           showModal={showResultsModal}
           handleCloseModal={handleCloseModal}
         ></ResultsModal>}
+        <GetPredictionComponent
+          getPrediction={getPrediction}>
+        </GetPredictionComponent>
         <RunSimulationComponent
           runSimulation={runSimulation}
         ></RunSimulationComponent>
