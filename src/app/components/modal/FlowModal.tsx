@@ -143,7 +143,7 @@ function FlowModal({
                             options={trafficGeneratorArray}
                             optionToBeDisabled={null}
                             keyTemplate="source"
-                            description="From"
+                            description="Source"
                             functionToUpdate={setSource}
                           ></ListboxComponent>
                         </div>
@@ -153,7 +153,7 @@ function FlowModal({
                             options={trafficGeneratorArray}
                             optionToBeDisabled={source}
                             keyTemplate="destination"
-                            description="To"
+                            description="Destination"
                             functionToUpdate={setDestination}
                           ></ListboxComponent>
                         </div>

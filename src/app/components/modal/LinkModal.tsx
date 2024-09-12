@@ -80,7 +80,7 @@ function LinkModal({
 											as="h3"
 											className="text-base font-semibold leading-6 text-gray-900"
 										>
-											{isEdit ? "Edit link" : "Add link"}
+											Edit link
 										</Dialog.Title>
 										<form action="submit" onSubmit={submitBandwidth}>
 											<div className="my-3 sm:grid sm:grid-flow-row-dense text-left">

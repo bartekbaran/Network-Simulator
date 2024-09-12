@@ -14,7 +14,7 @@ function ResultsModal({
 	const [results, setResults] = useState<ResponseData>(null);
 
 	function roundUpToDecimal(num: number): number {
-		return Math.ceil(num * 100_000) / 100;
+		return Math.ceil(num * 100) / 100;
 	}
 
 	useEffect(() => {
@@ -61,7 +61,9 @@ function ResultsModal({
 											as="h2"
 											className="text-base font-semibold leading-6 text-gray-900 pb-5"
 										>
-											Results
+											Results of {results ?
+											results.fromSimulator ? "simulation" : "prediction" :
+										 ""}
 										</Dialog.Title>
 										<div>
 											<Field>
